@@ -1,3 +1,10 @@
+import ProductList from "./assets/ProductList";
+
 export default function App() {
-  return <></>;
+  return (
+    <>
+      <h1>La mia app</h1>
+      <ProductList />
+    </>
+  );
 }
