@@ -6,6 +6,9 @@ export default function ProductList() {
   console.log(addedProducts);
 
   const updateProductQuantity = (name, quantity) => {
+    if (quantity < 1 || isNaN(quantity)) {
+      return;
+    }
     setAddedProducts((curr) =>
       curr.map((p) => (p.name === name ? { ...p, quantity } : p))
     );
@@ -74,7 +77,16 @@ export default function ProductList() {
                   </p>
                   <p>
                     <strong>Quantità :</strong>
-                    {addp.quantity}
+                    <input
+                      type="number"
+                      value={addp.quantity}
+                      onChange={(e) =>
+                        updateProductQuantity(
+                          addp.name,
+                          parseInt(e.target.value)
+                        )
+                      }
+                    />
                   </p>
 
                   <button onClick={() => removeFromCart(addp)}>
