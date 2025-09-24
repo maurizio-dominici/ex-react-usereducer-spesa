@@ -5,11 +5,21 @@ export default function ProductList() {
   const [addedProducts, setAddedProducts] = useState([]);
   console.log(addedProducts);
 
+  const updateProductQuantity = (name, quantity) => {
+    setAddedProducts((curr) =>
+      curr.map((p) => (p.name === name ? { ...p, quantity } : p))
+    );
+  };
+
   const addToCart = (product) => {
-    const isProductAlreadyAdded = addedProducts.some(
+    const alreadyAddedProduct = addedProducts.find(
       (p) => p.name === product.name
     );
-    if (isProductAlreadyAdded) {
+    if (alreadyAddedProduct) {
+      updateProductQuantity(
+        alreadyAddedProduct.name,
+        alreadyAddedProduct.quantity + 1
+      );
       return;
     }
     const productToAdd = {
@@ -18,6 +28,15 @@ export default function ProductList() {
     };
     setAddedProducts((curr) => [...curr, productToAdd]);
   };
+
+  const removeFromCart = (product) => {
+    setAddedProducts((curr) => curr.filter((p) => p.name !== product.name));
+  };
+
+  const totalToPay = addedProducts.reduce(
+    (acc, p) => acc + p.price * p.quantity,
+    0
+  );
 
   return (
     <>
@@ -43,8 +62,8 @@ export default function ProductList() {
             <h2>Carrello</h2>
 
             <ul>
-              {addedProducts.map((addp) => (
-                <li>
+              {addedProducts.map((addp, index) => (
+                <li key={index}>
                   <p>
                     <strong>Nome :</strong>
                     {addp.name}
@@ -57,9 +76,18 @@ export default function ProductList() {
                     <strong>Quantità :</strong>
                     {addp.quantity}
                   </p>
+
+                  <button onClick={() => removeFromCart(addp)}>
+                    Rimuovi dal carrello
+                  </button>
                 </li>
               ))}
             </ul>
+
+            <p>
+              <strong>Totale da pagare</strong>
+              {totalToPay.toFixed(2)} €
+            </p>
           </>
         )}
       </div>
