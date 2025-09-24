@@ -1,40 +1,45 @@
-import { useState } from "react";
+import { useReducer } from "react";
 import products from "../js/products";
 
-export default function ProductList() {
-  const [addedProducts, setAddedProducts] = useState([]);
-  console.log(addedProducts);
-
-  const updateProductQuantity = (name, quantity) => {
-    if (quantity < 1 || isNaN(quantity)) {
-      return;
-    }
-    setAddedProducts((curr) =>
-      curr.map((p) => (p.name === name ? { ...p, quantity } : p))
-    );
-  };
-
-  const addToCart = (product) => {
-    const alreadyAddedProduct = addedProducts.find(
-      (p) => p.name === product.name
-    );
-    if (alreadyAddedProduct) {
-      updateProductQuantity(
-        alreadyAddedProduct.name,
-        alreadyAddedProduct.quantity + 1
+function cartReducer(addedProducts, action) {
+  switch (action.type) {
+    case "ADD_ITEM":
+      // Logica per aggiungere un prodotto
+      const alreadyAddedProduct = addedProducts.find(
+        (p) => p.name === action.payload.name
       );
-      return;
-    }
-    const productToAdd = {
-      ...product,
-      quantity: 1,
-    };
-    setAddedProducts((curr) => [...curr, productToAdd]);
-  };
+      if (alreadyAddedProduct) {
+        action.payload.quantity = alreadyAddedProduct.quantity + 1;
+      } else {
+        const productToAdd = {
+          ...action.payload,
+          quantity: 1,
+        };
+        return [...addedProducts, productToAdd];
+      }
 
-  const removeFromCart = (product) => {
-    setAddedProducts((curr) => curr.filter((p) => p.name !== product.name));
-  };
+    case "UPDATE_QUANTITY":
+      // Logica per aggiornare la quantità
+      if (action.payload.quantity < 1 || isNaN(action.payload.quantity)) {
+        return addedProducts;
+      }
+      return addedProducts.map((p) =>
+        p.name === action.payload.name
+          ? { ...p, quantity: action.payload.quantity }
+          : p
+      );
+
+    case "REMOVE_ITEM":
+      // Logica per rimuovere un prodotto
+      return addedProducts.filter((p) => p.name !== action.payload);
+    default:
+      return state;
+  }
+}
+
+export default function ProductList() {
+  const [addedProducts, distpatchCart] = useReducer(cartReducer, []);
+  console.log(addedProducts);
 
   const totalToPay = addedProducts.reduce(
     (acc, p) => acc + p.price * p.quantity,
@@ -53,7 +58,11 @@ export default function ProductList() {
                 <strong>Nome :</strong>
                 {product.name} / <strong>Prezzo :</strong>
                 {product.price.toFixed(2)}
-                <button onClick={() => addToCart(product)}>
+                <button
+                  onClick={() =>
+                    distpatchCart({ type: "ADD_ITEM", payload: product })
+                  }
+                >
                   Aggiungi al carrello
                 </button>
               </li>
@@ -81,15 +90,22 @@ export default function ProductList() {
                       type="number"
                       value={addp.quantity}
                       onChange={(e) =>
-                        updateProductQuantity(
-                          addp.name,
-                          parseInt(e.target.value)
-                        )
+                        distpatchCart({
+                          type: "UPDATE_QUANTITY",
+                          payload: {
+                            name: addp.name,
+                            quantity: parseInt(e.target.value),
+                          },
+                        })
                       }
                     />
                   </p>
 
-                  <button onClick={() => removeFromCart(addp)}>
+                  <button
+                    onClick={() =>
+                      distpatchCart({ type: "REMOVE_ITEM", payload: addp.name })
+                    }
+                  >
                     Rimuovi dal carrello
                   </button>
                 </li>

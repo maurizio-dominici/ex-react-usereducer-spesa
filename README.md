@@ -79,3 +79,38 @@ Gestire l’aggiunta, la rimozione e il calcolo del totale del carrello in modo 
 ### Obiettivo:
 
 Consentire una modifica precisa e dinamica delle quantità direttamente nel carrello.
+
+# 🎯 Bonus 2: Usare useReducer per gestire lo stato del carrello
+
+Sostituisci useState con useReducer per gestire lo stato del carrello.
+
+Configura il reducer con queste azioni:
+
+ADD_ITEM: Aggiunge un nuovo articolo al carrello con quantity = 1.
+
+REMOVE_ITEM: Rimuove un articolo specifico dal carrello.
+
+UPDATE_QUANTITY: Modifica la quantità di un articolo esistente nel carrello, assicurandoti di gestire i casi limite (es. valori negativi).
+
+La struttura del reducer potrebbe essere:
+
+```js
+function cartReducer(state, action) {
+  switch (action.type) {
+    case "ADD_ITEM":
+      // Logica per aggiungere un prodotto
+      break;
+    case "REMOVE_ITEM":
+      // Logica per rimuovere un prodotto
+      break;
+    case "UPDATE_QUANTITY":
+      // Logica per aggiornare la quantità
+      break;
+    default:
+      return state;
+  }
+}
+```
+
+Inizializza lo stato con un array vuoto e usa useReducer per gestire le azioni del carrello.
+Obiettivo: Migliorare la struttura del codice utilizzando un approccio più scalabile e organizzato.
